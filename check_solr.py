@@ -9,16 +9,16 @@ then query the maximum possible replicateableGeneration the master has told the 
 
 OPTIONS:
 
--H : hostname/ip of the solr server we want to query
--p : tcp port solr is listening on
--w : webapp path
--P : ping the solr cores on given webapp (not to be used with replication check)
--r : check replication on the given webapp (not to be used with ping check)
--w : delta between master and local replication version, to warn on (default 1)
--c : delta between master and local replication version, to crit on (defualt 2)
--i : ignore a core, use multiple times to ignore multiple cores.
+-H / --host   : hostname/ip of the solr server we want to query (mandatory)
+-p / --port   : tcp port solr is listening on (mandatory)
+-w / --webapp : webapp path (mandatory)
+-P / --ping        : ping the solr cores on given webapp (not to be used with replication check)
+-r / --replication : check replication on the given webapp (not to be used with ping check)
+-w / --warn   : delta between master and local replication version, to warn on (default 1)
+-c / --crit   : delta between master and local replication version, to crit on (defualt 2)
+-i / --ignore : ignore a core, use multiple times to ignore multiple cores.
 
-EXAMPLE: ./check_solr_rep.py -H localhost -p 8093 -w solr -r -w 10 -c 20
+EXAMPLE: ./check_solr.py -H localhost -p 8093 -w solr -r -w 10 -c 20
 
 '''
 import urllib, json, sys
@@ -75,14 +75,14 @@ def solrping(core):
 def main():
     global baseurl, core_admin_url, threshold_warn, threshold_crit
 
-    cmd_parser = OptionParser(version="%prog 0.1")
+    cmd_parser = OptionParser(version="%prog 0.2")
     cmd_parser.add_option("-H", "--host", type="string", action="store", dest="solr_server", default="localhost", help="SOLR Server address")
     cmd_parser.add_option("-p", "--port", type="string", action="store", dest="solr_server_port", help="SOLR Server port")
     cmd_parser.add_option("-W", "--webapp", type="string", action="store", dest="solr_server_webapp", help="SOLR Server webapp path")
     cmd_parser.add_option("-P", "--ping", action="store_true", dest="check_ping", help="SOLR Ping", default=False)
     cmd_parser.add_option("-r", "--replication", action="store_true", dest="check_replication", help="SOLR Replication check", default=False)
     cmd_parser.add_option("-w", "--warn", type="string", action="store", dest="threshold_warn", help="WARN threshold for replication check", default=1)
-    cmd_parser.add_option("-c", "--critical", type="string", action="store", dest="threshold_crit", help="CRIT threshold for replication check", default=2)
+    cmd_parser.add_option("-c", "--crit", type="string", action="store", dest="threshold_crit", help="CRIT threshold for replication check", default=2)
     cmd_parser.add_option("-i", "--ignore", type="string", action="append", dest="ignore_cores", help="SOLR Cores to ignore", default="")
 
     (cmd_options, cmd_args) = cmd_parser.parse_args()
